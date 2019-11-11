@@ -46,6 +46,8 @@ class CPU:
         mdr = self.ram[mar]
         return mdr
 
+    def ram_write(self, mar, mdr):
+        self.ram[mar] = mdr
 
     def trace(self):
         """
