@@ -79,9 +79,9 @@ class CPU:
 
         while running:
             IR = self.ram_read(self.pc)
-            OPERANDS = bin(IR >> 0 & 0b1)
-            ALU = IR >> 2 & 1
-            OPCODE = 3 & 0b1111
+            OPERANDS = IR >> 6 & 0b11
+            ALU = IR >> 4 & 1
+            OPCODE = IR >> 0 & 0b1111
 
             if OPCODE == LDI:
                 self.reg[self.ram_read(self.pc + 1)] = self.ram_read(self.pc + 2)
@@ -90,7 +90,7 @@ class CPU:
             elif OPCODE == HLT:
                 running = False
             else:
-                print("Invalid instruction " + OPCODE)
+                print(f"Invalid instruction {OPCODE}")
                 running = False
-                
+
             self.pc += 1 + OPERANDS
