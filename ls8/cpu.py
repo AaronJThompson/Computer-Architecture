@@ -72,6 +72,9 @@ class CPU:
     def run(self):
         """Run the CPU."""
         LDI = 0b0010
+        PRN = 0b0111
+        HLT = 0b0001
+
         running = True
 
         while running:
@@ -79,3 +82,6 @@ class CPU:
             operands = bin(IR >> 0 & 0b1)
             ALU = IR >> 2 & 1
             OPCODE = 3 & 0b1111
+
+            if OPCODE == LDI:
+                self.reg[self.ram_read(self.pc + 1)] = self.ram_read(self.pc + 2)
