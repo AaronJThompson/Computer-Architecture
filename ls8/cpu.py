@@ -79,7 +79,7 @@ class CPU:
 
         while running:
             IR = self.ram_read(self.pc)
-            operands = bin(IR >> 0 & 0b1)
+            OPERANDS = bin(IR >> 0 & 0b1)
             ALU = IR >> 2 & 1
             OPCODE = 3 & 0b1111
 
@@ -91,4 +91,6 @@ class CPU:
                 running = False
             else:
                 print("Invalid instruction " + OPCODE)
-                running = false
+                running = False
+                
+            self.pc += 1 + OPERANDS
