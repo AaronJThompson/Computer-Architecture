@@ -89,9 +89,11 @@ class CPU:
             OPCODE = IR >> 0 & 0b1111
 
             if OPCODE == LDI:
-                self.reg[self.ram_read(self.pc + 1)] = self.ram_read(self.pc + 2)
+                register = self.ram_read(self.pc + 1) >> 0 & 0b111
+                self.reg[register] = self.ram_read(self.pc + 2)
             elif OPCODE == PRN:
-                print(self.reg[self.ram_read(self.pc + 1)])
+                register = self.ram_read(self.pc + 1) >> 0 & 0b111
+                print(self.reg[register])
             elif OPCODE == HLT:
                 running = False
             else:
