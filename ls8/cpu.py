@@ -42,6 +42,11 @@ class CPU:
         else:
             raise Exception("Unsupported ALU operation")
 
+    def ram_read(self, mar):
+        mdr = self.ram[mar]
+        return mdr
+
+
     def trace(self):
         """
         Handy function to print out the CPU state. You might want to call this
