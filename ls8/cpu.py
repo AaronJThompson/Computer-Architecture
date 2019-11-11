@@ -89,15 +89,27 @@ class CPU:
             OPCODE = IR >> 0 & 0b1111
 
             if OPCODE == LDI:
-                register = self.ram_read(self.pc + 1) >> 0 & 0b111
+                register = self.ram_read(self.pc + 1)
+                if (register >> 3 & 0b11111) != 0:
+                    print(f"Invalid register {register}")
+                    running = False
+                    break
+                register = register >> 0 & 0b111
                 self.reg[register] = self.ram_read(self.pc + 2)
             elif OPCODE == PRN:
-                register = self.ram_read(self.pc + 1) >> 0 & 0b111
+                register = self.ram_read(self.pc + 1)
+                if (register >> 3 & 0b11111) != 0:
+                    print(f"Invalid register {register}")
+                    running = False
+                    break
+                register = register >> 0 & 0b111
                 print(self.reg[register])
             elif OPCODE == HLT:
                 running = False
+                break
             else:
                 print(f"Invalid instruction {OPCODE}")
                 running = False
+                break
 
             self.pc += 1 + OPERANDS
