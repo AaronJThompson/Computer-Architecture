@@ -85,3 +85,10 @@ class CPU:
 
             if OPCODE == LDI:
                 self.reg[self.ram_read(self.pc + 1)] = self.ram_read(self.pc + 2)
+            elif OPCODE == PRN:
+                print(self.reg[self.ram_read(self.pc + 1)])
+            elif OPCODE == HLT:
+                running = False
+            else:
+                print("Invalid instruction " + OPCODE)
+                running = false
