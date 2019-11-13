@@ -79,8 +79,6 @@ class CPU:
             self.pc = self.reg[reg]
         elif op == "JLT" and self.fl == 0b100:
             self.pc = self.reg[reg]
-        else:
-            raise Exception("Unsupported SPC operation")
 
     def ram_read(self, mar):
         mdr = self.ram[mar]
@@ -185,7 +183,7 @@ class CPU:
             }
             # Get the function from switcher dictionary
             if opcode not in operations:
-                print(f"Invalid instruction {opcode}")
+                print(f"Invalid instruction {opcode} at address {cpu.pc}")
                 return False
             func = operations[opcode]
             ret = func(cpu)
@@ -200,14 +198,20 @@ class CPU:
             ALU = IR >> 5 & 1
             SPC = IR >> 4 & 1
             OPCODE = IR >> 0 & 0b1111
-            
-            if ALU == 1:
-                registers = self.get_registers(1, 2)
+
+            if SPC == 1:
+                registers = self.get_registers(1, 1)
                 if not registers:
                     return False
-                self.alu(ALU_OPS[OPCODE], registers[0], registers[1])
-            elif not OPCODE_to_operation(self, OPCODE):
-                running = False
-                break
-
-            self.pc += 1 + OPERANDS
+                self.spc(SPC_OPS[OPCODE], registers[0])
+            else:
+                if ALU == 1:
+                    registers = self.get_registers(1, 2)
+                    if not registers:
+                        return False
+                    self.alu(ALU_OPS[OPCODE], registers[0], registers[1])
+                elif not OPCODE_to_operation(self, OPCODE):
+                    running = False
+                    break
+                print(f"{self.pc} + {OPERANDS}")
+                self.pc += 1 + OPERANDS
