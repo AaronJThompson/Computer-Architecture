@@ -17,7 +17,27 @@ class CPU:
 
         address = 0
         examples_dir = os.path.join(os.path.dirname(__file__), "examples/")
-        
+        file_path = os.path.join(examples_dir, file_name)
+
+        program = list()
+        try:
+            with open(file_path) as f:
+                for line in f:
+                    comment_split = line.split("#")
+
+                    num = comment_split[0].strip()
+
+                    if len(num) == 0:
+                        continue
+
+                    value = int(num, 2)
+
+                    program.append(value)
+
+        except FileNotFoundError:
+            print(f"{file_name} not found")
+            sys.exit(2)
+
         for instruction in program:
             self.ram[address] = instruction
             address += 1
