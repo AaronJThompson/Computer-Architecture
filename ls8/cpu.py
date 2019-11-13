@@ -1,6 +1,7 @@
 """CPU functionality."""
 
 import sys
+import os
 
 class CPU:
     """Main CPU class."""
@@ -11,28 +12,32 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
 
-    def load(self):
+    def load(self, file_name):
         """Load a program into memory."""
 
         address = 0
+        examples_dir = os.path.join(os.path.dirname(__file__), "examples/")
+        file_path = os.path.join(examples_dir, file_name)
 
-        # For now, we've just hardcoded a program:
+        program = list()
+        try:
+            with open(file_path) as f:
+                for line in f:
+                    comment_split = line.split("#")
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b10000010, # LDI R1,2
-            0b00000001,
-            0b00000010,
-            0b01000111, # PRN R1
-            0b00000001,
-            0b00000001, # HLT
-        ]
+                    num = comment_split[0].strip()
 
+                    if len(num) == 0:
+                        continue
+
+                    value = int(num, 2)
+
+                    program.append(value)
+
+        except FileNotFoundError:
+            print(f"{file_name} not found")
+            sys.exit(2)
+            
         for instruction in program:
             self.ram[address] = instruction
             address += 1
@@ -43,7 +48,8 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -73,29 +79,58 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+    def __verify_reg__(self, register):
+        if (register >> 3 & 0b11111) != 0:
+            return False
+        return True
 
     def run(self):
         """Run the CPU."""
         LDI = 0b0010
         PRN = 0b0111
         HLT = 0b0001
-
+        
+        ALU_OPS = {
+            0b0010: "MUL"
+        }
         running = True
 
         while running:
             IR = self.ram_read(self.pc)
             OPERANDS = IR >> 6 & 0b11
-            ALU = IR >> 4 & 1
+            ALU = IR >> 5 & 1
             OPCODE = IR >> 0 & 0b1111
-
-            if OPCODE == LDI:
-                self.reg[self.ram_read(self.pc + 1)] = self.ram_read(self.pc + 2)
+            
+            if ALU == 1:
+                register1 = self.ram_read(self.pc + 1)
+                register2 = self.ram_read(self.pc + 2)
+                if not (self.__verify_reg__(register1) and self.__verify_reg__(register2)):
+                    print(f"Invalid registers")
+                    running = False
+                    break
+                self.alu(ALU_OPS[OPCODE], register1, register2)
+            elif OPCODE == LDI:
+                register = self.ram_read(self.pc + 1)
+                if not self.__verify_reg__(register):
+                    print(f"Invalid register {register}")
+                    running = False
+                    break
+                register = register >> 0 & 0b111
+                self.reg[register] = self.ram_read(self.pc + 2)
             elif OPCODE == PRN:
-                print(self.reg[self.ram_read(self.pc + 1)])
+                register = self.ram_read(self.pc + 1)
+                if not self.__verify_reg__(register):
+                    print(f"Invalid register {register}")
+                    running = False
+                    break
+                register = register >> 0 & 0b111
+                print(self.reg[register])
             elif OPCODE == HLT:
                 running = False
+                break
             else:
                 print(f"Invalid instruction {OPCODE}")
                 running = False
+                break
 
             self.pc += 1 + OPERANDS
