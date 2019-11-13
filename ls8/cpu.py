@@ -90,6 +90,8 @@ class CPU:
         LDI = 0b0010
         PRN = 0b0111
         HLT = 0b0001
+        PUSH = 0b0101
+        POP = 0b0110
         
         ALU_OPS = {
             0b0010: "MUL"
