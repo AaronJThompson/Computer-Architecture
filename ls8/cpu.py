@@ -131,6 +131,17 @@ class CPU:
                 MDR = self.reg[register]
                 self.ram_write(MAR, MDR)
                 self.reg[7] -= 1
+            elif OPCODE == POP:
+                register = self.ram_read(self.pc + 1)
+                if not self.__verify_reg__(register):
+                    print(f"Invalid register {register}")
+                    running = False
+                    break
+                register = register >> 0 & 0b111
+                MAR = self.reg[7]
+                MDR = self.ram_read(MAR)
+                self.reg[register] = MDR
+                self.reg[7] += 1
             elif OPCODE == PRN:
                 register = self.ram_read(self.pc + 1)
                 if not self.__verify_reg__(register):
