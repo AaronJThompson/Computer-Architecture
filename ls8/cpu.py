@@ -67,6 +67,18 @@ class CPU:
     def spc(self, op, reg):
         if op == "JMP":
             self.pc = self.reg[reg]
+        elif op == "JEQ" and self.fl == 0b001:
+            self.pc = self.reg[reg]
+        elif op == "JNE" and self.fl & 0b001 == 0:
+            self.pc = self.reg[reg]
+        elif op == "JGE" and self.fl & 0b011 > 0:
+            self.pc = self.reg[reg]
+        elif op == "JGT" and self.fl == 0b010:
+            self.pc = self.reg[reg]
+        elif op == "JLE" and self.fl & 0b101 > 0:
+            self.pc = self.reg[reg]
+        elif op == "JLT" and self.fl == 0b100:
+            self.pc = self.reg[reg]
         else:
             raise Exception("Unsupported SPC operation")
 
