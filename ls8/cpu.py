@@ -84,6 +84,7 @@ class CPU:
         LDI = 0b0010
         PRN = 0b0111
         HLT = 0b0001
+        MUL = 0b0010
 
         running = True
 
