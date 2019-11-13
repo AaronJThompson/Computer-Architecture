@@ -79,6 +79,9 @@ class CPU:
             self.pc = self.reg[reg]
         elif op == "JLT" and self.fl == 0b100:
             self.pc = self.reg[reg]
+        else:
+            return False
+        return True
 
     def ram_read(self, mar):
         mdr = self.ram[mar]
@@ -203,7 +206,8 @@ class CPU:
                 registers = self.get_registers(1, 1)
                 if not registers:
                     return False
-                self.spc(SPC_OPS[OPCODE], registers[0])
+                if not self.spc(SPC_OPS[OPCODE], registers[0]):
+                    self.pc += 1 + OPERANDS
             else:
                 if ALU == 1:
                     registers = self.get_registers(1, 2)
@@ -213,5 +217,5 @@ class CPU:
                 elif not OPCODE_to_operation(self, OPCODE):
                     running = False
                     break
-                print(f"{self.pc} + {OPERANDS}")
+                
                 self.pc += 1 + OPERANDS
