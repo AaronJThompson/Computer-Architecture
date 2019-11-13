@@ -12,6 +12,7 @@ class CPU:
         self.reg = [0] * 8
         self.reg[7] = 0xf3
         self.pc = 0
+        self.fl = 0
 
     def load(self, file_name):
         """Load a program into memory."""
