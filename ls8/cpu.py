@@ -11,27 +11,10 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
 
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
 
         address = 0
-
-        # For now, we've just hardcoded a program:
-
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b10000010, # LDI R1,2
-            0b00000001,
-            0b00000010,
-            0b01000111, # PRN R1
-            0b00000001,
-            0b00000001, # HLT
-        ]
 
         for instruction in program:
             self.ram[address] = instruction
@@ -87,7 +70,7 @@ class CPU:
             OPERANDS = IR >> 6 & 0b11
             ALU = IR >> 4 & 1
             OPCODE = IR >> 0 & 0b1111
-
+            
             if OPCODE == LDI:
                 register = self.ram_read(self.pc + 1)
                 if (register >> 3 & 0b11111) != 0:
