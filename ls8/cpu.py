@@ -112,6 +112,7 @@ class CPU:
             0b0010: "MUL",
             0b0111: "CMP"
         }
+
         MOVE_PROGRAM_OPS = {
             0b0101: "JEQ",
             0b0110: "JNE",
@@ -179,6 +180,7 @@ class CPU:
             IR = self.ram_read(self.pc)
             OPERANDS = IR >> 6 & 0b11
             ALU = IR >> 5 & 1
+            SPC = IR >> 4 & 1
             OPCODE = IR >> 0 & 0b1111
             
             if ALU == 1:
