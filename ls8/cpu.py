@@ -64,6 +64,12 @@ class CPU:
         else:
             raise Exception("Unsupported ALU operation")
 
+    def spc(self, op, reg):
+        if op == "JMP":
+            self.pc = self.reg[reg]
+        else:
+            raise Exception("Unsupported SPC operation")
+
     def ram_read(self, mar):
         mdr = self.ram[mar]
         return mdr
@@ -113,7 +119,7 @@ class CPU:
             0b0111: "CMP"
         }
 
-        MOVE_PROGRAM_OPS = {
+        SPC_OPS = {
             0b0101: "JEQ",
             0b0110: "JNE",
             0b0100: "JMP",
