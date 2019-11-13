@@ -37,7 +37,7 @@ class CPU:
         except FileNotFoundError:
             print(f"{file_name} not found")
             sys.exit(2)
-
+        print(program)
         for instruction in program:
             self.ram[address] = instruction
             address += 1
@@ -88,8 +88,10 @@ class CPU:
         LDI = 0b0010
         PRN = 0b0111
         HLT = 0b0001
-        MUL = 0b0010
-
+        
+        ALU_OPS = {
+            0b0010: "MUL"
+        }
         running = True
 
         while running:
@@ -98,6 +100,14 @@ class CPU:
             ALU = IR >> 4 & 1
             OPCODE = IR >> 0 & 0b1111
             
+            if ALU == 1:
+                register1 = self.ram_read(self.pc + 1)
+                register2 = self.ram_read(self.pc + 2)
+                if not (self.__verify_reg__(register1) and self.__verify_reg__(register2)):
+                    print(f"Invalid registers")
+                    running = False
+                    break
+                self.alu(ALU_OPS[OPCODE], register1, register2)
             if OPCODE == LDI:
                 register = self.ram_read(self.pc + 1)
                 if not self.__verify_reg__(register):
