@@ -52,6 +52,15 @@ class CPU:
             self.reg[reg_a] += self.reg[reg_b]
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "CMP":
+            self.fl = 0
+            a, b = self.reg[reg_a], self.reg[reg_b]
+            if a < b:
+                self.fl = 0b100
+            elif a == b:
+                self.fl = 0b001
+            elif a > b:
+                self.fl = 0b010
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -100,7 +109,8 @@ class CPU:
         """Run the CPU."""
         
         ALU_OPS = {
-            0b0010: "MUL"
+            0b0010: "MUL",
+            0b0111: "CMP"
         }
         running = True
 
