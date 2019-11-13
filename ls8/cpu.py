@@ -87,36 +87,72 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        PRN = 0b0111
-        HLT = 0b0001
-        PUSH = 0b0101
-        POP = 0b0110
         
         ALU_OPS = {
             0b0010: "MUL"
         }
         running = True
 
-        def LDI():
-            nonlocal self
-            register = self.ram_read(self.pc + 1)
-            if not self.__verify_reg__(register):
+        def LDI(cpu):
+            register = cpu.ram_read(cpu.pc + 1)
+            if not cpu.__verify_reg__(register):
                 print(f"Invalid register {register}")
-                running = False
-                break
+                return False
             register = register >> 0 & 0b111
-            self.reg[register] = self.ram_read(self.pc + 2)
+            cpu.reg[register] = cpu.ram_read(cpu.pc + 2)
+
+        def PRN(cpu):
+            register = cpu.ram_read(cpu.pc + 1)
+            if not cpu.__verify_reg__(register):
+                print(f"Invalid register {register}")
+                return False
+            register = register >> 0 & 0b111
+            print(cpu.reg[register])
+
+        def PUSH(cpu):
+            register = cpu.ram_read(cpu.pc + 1)
+            if not cpu.__verify_reg__(register):
+                print(f"Invalid register {register}")
+                return False
+            register = register >> 0 & 0b111
+            cpu.reg[7] -= 1
+            MAR = cpu.reg[7]
+            MDR = cpu.reg[register]
+            cpu.ram_write(MAR, MDR)
+        
+        def POP(cpu):
+            register = cpu.ram_read(cpu.pc + 1)
+            if not cpu.__verify_reg__(register):
+                print(f"Invalid register {register}")
+                return False
+            register = register >> 0 & 0b111
+            MAR = cpu.reg[7]
+            MDR = cpu.ram_read(MAR)
+            cpu.reg[register] = MDR
+            cpu.reg[7] += 1
+
+        def HLT(cpu):
+            return False
 
         def OPCODE_to_operation(opcode):
+            nonlocal self
             operations = {
                 0b0010: LDI,
+                0b0111: PRN,
+                0b0101: PUSH,
+                0b0110: POP,
+                0b0001: HLT
             }
             # Get the function from switcher dictionary
             if opcode not in operations:
+                print(f"Invalid instruction {opcode}")
                 return False
             func = operations[opcode]
-            func()
-            return True
+            ret = func()
+            if ret is None:
+                return True
+            else:
+                return ret
 
         while running:
             IR = self.ram_read(self.pc)
@@ -132,50 +168,5 @@ class CPU:
                     running = False
                     break
                 self.alu(ALU_OPS[OPCODE], register1, register2)
-            elif OPCODE == LDI:
-                register = self.ram_read(self.pc + 1)
-                if not self.__verify_reg__(register):
-                    print(f"Invalid register {register}")
-                    running = False
-                    break
-                register = register >> 0 & 0b111
-                self.reg[register] = self.ram_read(self.pc + 2)
-            elif OPCODE == PUSH:
-                register = self.ram_read(self.pc + 1)
-                if not self.__verify_reg__(register):
-                    print(f"Invalid register {register}")
-                    running = False
-                    break
-                register = register >> 0 & 0b111
-                self.reg[7] -= 1
-                MAR = self.reg[7]
-                MDR = self.reg[register]
-                self.ram_write(MAR, MDR)
-            elif OPCODE == POP:
-                register = self.ram_read(self.pc + 1)
-                if not self.__verify_reg__(register):
-                    print(f"Invalid register {register}")
-                    running = False
-                    break
-                register = register >> 0 & 0b111
-                MAR = self.reg[7]
-                MDR = self.ram_read(MAR)
-                self.reg[register] = MDR
-                self.reg[7] += 1
-            elif OPCODE == PRN:
-                register = self.ram_read(self.pc + 1)
-                if not self.__verify_reg__(register):
-                    print(f"Invalid register {register}")
-                    running = False
-                    break
-                register = register >> 0 & 0b111
-                print(self.reg[register])
-            elif OPCODE == HLT:
-                running = False
-                break
-            else:
-                print(f"Invalid instruction {OPCODE}")
-                running = False
-                break
 
             self.pc += 1 + OPERANDS
