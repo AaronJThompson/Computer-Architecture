@@ -1,6 +1,7 @@
 """CPU functionality."""
 
 import sys
+import os
 
 class CPU:
     """Main CPU class."""
@@ -11,11 +12,12 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
 
-    def load(self, program):
+    def load(self, file_name):
         """Load a program into memory."""
 
         address = 0
-
+        examples_dir = os.path.join(os.path.dirname(__file__), "examples/")
+        
         for instruction in program:
             self.ram[address] = instruction
             address += 1
