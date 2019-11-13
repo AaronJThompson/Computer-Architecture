@@ -134,8 +134,7 @@ class CPU:
         def HLT(cpu):
             return False
 
-        def OPCODE_to_operation(opcode):
-            nonlocal self
+        def OPCODE_to_operation(cpu, opcode):
             operations = {
                 0b0010: LDI,
                 0b0111: PRN,
@@ -148,7 +147,7 @@ class CPU:
                 print(f"Invalid instruction {opcode}")
                 return False
             func = operations[opcode]
-            ret = func()
+            ret = func(cpu)
             if ret is None:
                 return True
             else:
@@ -168,5 +167,8 @@ class CPU:
                     running = False
                     break
                 self.alu(ALU_OPS[OPCODE], register1, register2)
+            elif not OPCODE_to_operation(self, OPCODE):
+                running = False
+                break
 
             self.pc += 1 + OPERANDS
