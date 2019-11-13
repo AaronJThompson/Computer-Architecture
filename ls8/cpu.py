@@ -129,7 +129,8 @@ class CPU:
         
         ALU_OPS = {
             0b0010: "MUL",
-            0b0111: "CMP"
+            0b0111: "CMP",
+            0b0000: "ADD"
         }
 
         SPC_OPS = {
@@ -217,5 +218,5 @@ class CPU:
                 elif not OPCODE_to_operation(self, OPCODE):
                     running = False
                     break
-                
+
                 self.pc += 1 + OPERANDS
