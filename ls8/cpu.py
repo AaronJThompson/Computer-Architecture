@@ -10,6 +10,7 @@ class CPU:
         """Construct a new CPU."""
         self.ram = [0] * 256
         self.reg = [0] * 8
+        self.reg[7] = 0xf3
         self.pc = 0
 
     def load(self, file_name):
