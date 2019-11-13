@@ -78,6 +78,10 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+    def __verify_reg__(self, register):
+        if (register >> 3 & 0b11111) != 0:
+            return False
+        return True
 
     def run(self):
         """Run the CPU."""
@@ -96,7 +100,7 @@ class CPU:
             
             if OPCODE == LDI:
                 register = self.ram_read(self.pc + 1)
-                if (register >> 3 & 0b11111) != 0:
+                if not self.__verify_reg__(register):
                     print(f"Invalid register {register}")
                     running = False
                     break
@@ -104,7 +108,7 @@ class CPU:
                 self.reg[register] = self.ram_read(self.pc + 2)
             elif OPCODE == PRN:
                 register = self.ram_read(self.pc + 1)
-                if (register >> 3 & 0b11111) != 0:
+                if not self.__verify_reg__(register):
                     print(f"Invalid register {register}")
                     running = False
                     break
