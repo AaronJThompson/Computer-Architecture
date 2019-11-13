@@ -120,6 +120,15 @@ class CPU:
                     break
                 register = register >> 0 & 0b111
                 self.reg[register] = self.ram_read(self.pc + 2)
+            elif OPCODE == PUSH:
+                register = self.ram_read(self.pc + 1)
+                if not self.__verify_reg__(register):
+                    print(f"Invalid register {register}")
+                    running = False
+                    break
+                register = register >> 0 & 0b111
+                self.reg[7] = self.reg[register]
+                self.reg[7] -= 1
             elif OPCODE == PRN:
                 register = self.ram_read(self.pc + 1)
                 if not self.__verify_reg__(register):
