@@ -37,7 +37,7 @@ class CPU:
         except FileNotFoundError:
             print(f"{file_name} not found")
             sys.exit(2)
-        print(program)
+            
         for instruction in program:
             self.ram[address] = instruction
             address += 1
@@ -48,7 +48,8 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -97,7 +98,7 @@ class CPU:
         while running:
             IR = self.ram_read(self.pc)
             OPERANDS = IR >> 6 & 0b11
-            ALU = IR >> 4 & 1
+            ALU = IR >> 5 & 1
             OPCODE = IR >> 0 & 0b1111
             
             if ALU == 1:
@@ -108,7 +109,7 @@ class CPU:
                     running = False
                     break
                 self.alu(ALU_OPS[OPCODE], register1, register2)
-            if OPCODE == LDI:
+            elif OPCODE == LDI:
                 register = self.ram_read(self.pc + 1)
                 if not self.__verify_reg__(register):
                     print(f"Invalid register {register}")
