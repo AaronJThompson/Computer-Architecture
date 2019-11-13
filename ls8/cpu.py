@@ -127,7 +127,9 @@ class CPU:
                     running = False
                     break
                 register = register >> 0 & 0b111
-                self.reg[7] = self.reg[register]
+                MAR = self.reg[7]
+                MDR = self.reg[register]
+                self.ram_write(MAR, MDR)
                 self.reg[7] -= 1
             elif OPCODE == PRN:
                 register = self.ram_read(self.pc + 1)
