@@ -85,6 +85,16 @@ class CPU:
             return False
         return True
 
+    def get_registers(self, offset, count):
+        registers = list()
+        for i in range(offset, offset + count):
+            register = self.ram_read(self.pc + i)
+            if not self.__verify_reg__(register):
+                print(f"Invalid register {register}")
+                return False
+            registers.append(register >> 0 & 0b111)
+        return registers
+
     def run(self):
         """Run the CPU."""
         
@@ -94,41 +104,33 @@ class CPU:
         running = True
 
         def LDI(cpu):
-            register = cpu.ram_read(cpu.pc + 1)
-            if not cpu.__verify_reg__(register):
-                print(f"Invalid register {register}")
+            registers = cpu.get_registers(1, 1)
+            if not registers:
                 return False
-            register = register >> 0 & 0b111
-            cpu.reg[register] = cpu.ram_read(cpu.pc + 2)
+            cpu.reg[registers[0]] = cpu.ram_read(cpu.pc + 2)
 
         def PRN(cpu):
-            register = cpu.ram_read(cpu.pc + 1)
-            if not cpu.__verify_reg__(register):
-                print(f"Invalid register {register}")
+            registers = cpu.get_registers(1, 1)
+            if not registers:
                 return False
-            register = register >> 0 & 0b111
-            print(cpu.reg[register])
+            print(cpu.reg[registers[0]])
 
         def PUSH(cpu):
-            register = cpu.ram_read(cpu.pc + 1)
-            if not cpu.__verify_reg__(register):
-                print(f"Invalid register {register}")
+            registers = cpu.get_registers(1, 1)
+            if not registers:
                 return False
-            register = register >> 0 & 0b111
             cpu.reg[7] -= 1
             MAR = cpu.reg[7]
-            MDR = cpu.reg[register]
+            MDR = cpu.reg[registers[0]]
             cpu.ram_write(MAR, MDR)
         
         def POP(cpu):
-            register = cpu.ram_read(cpu.pc + 1)
-            if not cpu.__verify_reg__(register):
-                print(f"Invalid register {register}")
+            registers = cpu.get_registers(1, 1)
+            if not registers:
                 return False
-            register = register >> 0 & 0b111
             MAR = cpu.reg[7]
             MDR = cpu.ram_read(MAR)
-            cpu.reg[register] = MDR
+            cpu.reg[registers[0]] = MDR
             cpu.reg[7] += 1
 
         def HLT(cpu):
@@ -160,13 +162,10 @@ class CPU:
             OPCODE = IR >> 0 & 0b1111
             
             if ALU == 1:
-                register1 = self.ram_read(self.pc + 1)
-                register2 = self.ram_read(self.pc + 2)
-                if not (self.__verify_reg__(register1) and self.__verify_reg__(register2)):
-                    print(f"Invalid registers")
-                    running = False
-                    break
-                self.alu(ALU_OPS[OPCODE], register1, register2)
+                registers = self.get_registers(1, 2)
+                if not registers:
+                    return False
+                self.alu(ALU_OPS[OPCODE], registers[0], registers[1])
             elif not OPCODE_to_operation(self, OPCODE):
                 running = False
                 break
