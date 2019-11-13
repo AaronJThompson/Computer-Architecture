@@ -112,6 +112,15 @@ class CPU:
             0b0010: "MUL",
             0b0111: "CMP"
         }
+        MOVE_PROGRAM_OPS = {
+            0b0101: "JEQ",
+            0b0110: "JNE",
+            0b0100: "JMP",
+            0b1010: "JGE",
+            0b0111: "JGT",
+            0b1001: "JLE",
+            0b1000: "JLT"
+        }
         running = True
 
         def LDI(cpu):
