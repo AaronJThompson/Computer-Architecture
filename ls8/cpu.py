@@ -87,7 +87,6 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        LDI = 0b0010
         PRN = 0b0111
         HLT = 0b0001
         PUSH = 0b0101
@@ -97,6 +96,27 @@ class CPU:
             0b0010: "MUL"
         }
         running = True
+
+        def LDI():
+            nonlocal self
+            register = self.ram_read(self.pc + 1)
+            if not self.__verify_reg__(register):
+                print(f"Invalid register {register}")
+                running = False
+                break
+            register = register >> 0 & 0b111
+            self.reg[register] = self.ram_read(self.pc + 2)
+
+        def OPCODE_to_operation(opcode):
+            operations = {
+                0b0010: LDI,
+            }
+            # Get the function from switcher dictionary
+            if opcode not in operations:
+                return False
+            func = operations[opcode]
+            func()
+            return True
 
         while running:
             IR = self.ram_read(self.pc)
