@@ -65,7 +65,15 @@ class CPU:
             raise Exception("Unsupported ALU operation")
 
     def spc(self, op, reg):
-        if op == "JMP":
+        if op == "CALL":
+            #Push return address onto stack
+            self.reg[7] -= 1
+            MAR = self.reg[7]
+            MDR = self.ram_read(self.pc + 2)
+            self.ram_write(MAR, MDR)
+            #Set new PC
+            self.pc = self.reg[reg]
+        elif op == "JMP":
             self.pc = self.reg[reg]
         elif op == "JEQ" and self.fl == 0b001:
             self.pc = self.reg[reg]
