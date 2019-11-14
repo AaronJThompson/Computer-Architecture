@@ -140,7 +140,9 @@ class CPU:
             0b1010: "JGE",
             0b0111: "JGT",
             0b1001: "JLE",
-            0b1000: "JLT"
+            0b1000: "JLT",
+            0b0001: "RET",
+            0b0000: "CALL"
         }
         running = True
 
