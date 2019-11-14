@@ -73,6 +73,12 @@ class CPU:
             self.ram_write(MAR, MDR)
             #Set new PC
             self.pc = self.reg[reg]
+        elif op == "RET":
+            #Pop top value off stack
+            MAR = self.reg[7]
+            #Set new PC
+            self.pc = self.ram_read(MAR)
+            self.reg[7] += 1
         elif op == "JMP":
             self.pc = self.reg[reg]
         elif op == "JEQ" and self.fl == 0b001:
