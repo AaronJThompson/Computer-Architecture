@@ -69,7 +69,7 @@ class CPU:
             #Push return address onto stack
             self.reg[7] -= 1
             MAR = self.reg[7]
-            MDR = self.ram_read(self.pc + 2)
+            MDR = self.pc + 2
             self.ram_write(MAR, MDR)
             #Set new PC
             self.pc = self.reg[reg]
